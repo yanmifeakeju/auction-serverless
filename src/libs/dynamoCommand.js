@@ -8,11 +8,5 @@ export const putItem = async (tableName, items) => {
       ...items,
     },
   };
-  try {
-    const data = await ddbDocClient.send(new PutCommand(params));
-    console.log('Success - item added or updated', data);
-    return data;
-  } catch (err) {
-    console.log('Error', err.stack);
-  }
+  return ddbDocClient.send(new PutCommand(params));
 };
