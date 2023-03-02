@@ -1,9 +1,6 @@
-import middy from '@middy/core';
-import httpJsonBodyParser from '@middy/http-json-body-parser';
-import httpEventNormalizer from '@middy/http-event-normalizer';
-import httpErrorHandler from '@middy/http-error-handler';
 import createHttpError from 'http-errors';
 import { getTableItems } from '../libs/dynamoCommand.js';
+import commonMiddleWare from '../libs/commonMiddleWare.js';
 
 async function getAuction(event, _context) {
   const { id } = event.pathParameters;
@@ -27,7 +24,4 @@ async function getAuction(event, _context) {
   };
 }
 
-export const handler = middy(getAuction)
-  .use(httpJsonBodyParser())
-  .use(httpEventNormalizer())
-  .use(httpErrorHandler());
+export const handler = commonMiddleWare(getAuction);
