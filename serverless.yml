@@ -1,4 +1,5 @@
 service: auction
+frameworkVersion: ^3.28.1
 
 provider:
   name: aws
@@ -42,6 +43,11 @@ functions:
       - http:
           method: PATCH
           path: /auction/{id}/bid
+
+  processAuctions:
+    handler: src/handlers/processAuctions.handler
+    # events:
+    #   - schedule: rate(1 minute)
 
 custom:
   AuctionsTable:

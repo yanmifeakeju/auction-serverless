@@ -7,8 +7,12 @@ async function placeBid(event, _context) {
   const { id } = event.pathParameters;
   const { amount } = event.body;
 
-  const auction = getAuctionById(id);
+  const auction = await getAuctionById(id);
   if (!auction) throw new createError.NotFound(`Auction with ${id} not found.`);
+  if (auction.highestBid.amount >= amount)
+    throw new createError.NotAcceptable(
+      `The bided amount ${amount} is not greater than the current ${auction.highestBid.amount}`
+    );
 
   let updatedAuction;
 
