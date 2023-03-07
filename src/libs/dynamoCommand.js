@@ -13,6 +13,7 @@ export const putItem = async (tableName, items) => {
     Item: {
       ...items,
     },
+    ReturnValues: 'ALL_OLD',
   };
   return ddbDocClient.send(new PutCommand(params));
 };

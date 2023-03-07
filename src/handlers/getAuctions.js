@@ -1,21 +1,16 @@
 import createHttpError from 'http-errors';
-import { scanTableItems } from '../libs/dynamoCommand.js';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
+import { fetchAuctions } from '../auctions/index.js';
 
-async function getAuctions(event, _context) {
-  let auctions;
-
+async function getAuctions(_event, _context) {
   try {
-    const result = await scanTableItems(process.env.AUCTIONS_TABLE_NAME);
-    auctions = result.Items || [];
+    const auctions = await fetchAuctions();
+
+    return { statusCode: 200, body: JSON.stringify({ auctions }) };
   } catch (error) {
     console.log(error);
     throw new createHttpError.InternalServerError(error);
   }
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ auctions }),
-  };
 }
 
 export const handler = commonMiddleWare(getAuctions);
