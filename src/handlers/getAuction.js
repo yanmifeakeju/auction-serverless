@@ -1,31 +1,25 @@
-import createHttpError from 'http-errors';
-import { getTableItems } from '../libs/dynamoCommand.js';
+import createError from 'http-errors';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
-
-export const getAuctionById = async (id) => {
-  const auction = await getTableItems(process.env.AUCTIONS_TABLE_NAME, { id });
-  return auction.Item;
-};
+import { fetchAuctionById } from '../auctions/index.js';
+import { isHttpError } from 'http-errors';
+import { errorHandler } from '../libs/utils.js';
 
 async function getAuction(event, _context) {
   const { id } = event.pathParameters;
 
-  let auction;
-
   try {
-    auction = await getAuctionById(id);
+    const auction = await fetchAuctionById(id);
+
+    if (!auction)
+      throw new createError.NotFound(`Auction with id ${id} not found.`);
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ auction }),
+    };
   } catch (error) {
-    console.log(error);
-    throw new createHttpError.InternalServerError(error);
+    errorHandler(error);
   }
-
-  if (!auction)
-    throw new createHttpError.NotFound(`Auction with id ${id} not found.`);
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ auction }),
-  };
 }
 
 export const handler = commonMiddleWare(getAuction);

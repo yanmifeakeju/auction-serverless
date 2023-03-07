@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { saveAuction } from '../auctions/index.js';
+import { errorHandler } from '../libs/utils.js';
 
 async function createAuction(event, _context) {
   const { title } = event.body;
@@ -13,8 +14,7 @@ async function createAuction(event, _context) {
       body: JSON.stringify({ auction }),
     };
   } catch (error) {
-    console.log(error);
-    throw new createHttpError.InternalServerError(error);
+    errorHandler(error);
   }
 }
 

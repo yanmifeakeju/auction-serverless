@@ -1,6 +1,7 @@
 import createHttpError from 'http-errors';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
+import { errorHandler } from '../libs/utils.js';
 
 async function getAuctions(_event, _context) {
   try {
@@ -8,8 +9,7 @@ async function getAuctions(_event, _context) {
 
     return { statusCode: 200, body: JSON.stringify({ auctions }) };
   } catch (error) {
-    console.log(error);
-    throw new createHttpError.InternalServerError(error);
+    errorHandler(error);
   }
 }
 
