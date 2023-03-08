@@ -13,10 +13,7 @@ async function getAuction(event, _context) {
     if (!auction)
       throw new createError.NotFound(`Auction with id ${id} not found.`);
 
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ auction }),
-    };
+    return { statusCode: 200, body: JSON.stringify({ auction }) };
   } catch (error) {
     errorHandler(error);
   }

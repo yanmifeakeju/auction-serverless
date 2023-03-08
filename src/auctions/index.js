@@ -2,6 +2,7 @@ import { v4 as uuid } from 'uuid';
 import {
   getTableItems,
   putItem,
+  queryTableItems,
   scanTableItems,
   updateTableItems,
 } from '../libs/dynamoCommand.js';
@@ -58,4 +59,20 @@ export const updateAuctionBid = async (id, amount) => {
   return updatedAuction.Attributes;
 };
 
-export const fetchAuctionsBids = () => {};
+export const fetchEndedAuctions = async () => {
+  const now = new Date();
+
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    IndexName: 'statusAndEndDate',
+    KeyConditionExpression: '#status = :status AND endingAt <= :now',
+    ExpressionAttributeValues: {
+      ':status': { S: 'OPEN' },
+      ':now': { S: now.toISOString() },
+    },
+    ExpressionAttributeNames: { '#status': 'status' },
+  };
+
+  const result = await queryTableItems(params);
+  return result.Items;
+};
