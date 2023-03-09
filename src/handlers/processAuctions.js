@@ -1,10 +1,15 @@
-import { fetchEndedAuctions } from '../auctions/index.js';
+import { closeAuction, fetchEndedAuctions } from '../auctions/index.js';
 import { errorHandler } from '../libs/utils.js';
 
 async function processAuctions() {
   try {
     const auctionsToClose = await fetchEndedAuctions();
-    console.log(auctionsToClose);
+    const closedPromises = auctionsToClose.map((auction) =>
+      closeAuction(auction.id.S)
+    );
+
+    await Promise.all(closedPromises);
+    return { closed: closedPromises.length };
   } catch (error) {
     errorHandler(error);
   }

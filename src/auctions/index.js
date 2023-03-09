@@ -6,6 +6,7 @@ import {
   scanTableItems,
   updateTableItems,
 } from '../libs/dynamoCommand.js';
+import { AppError } from '../libs/AppError.js';
 
 export const saveAuction = async ({ title }) => {
   const now = new Date();
@@ -38,24 +39,27 @@ export const fetchAuctionById = async (id) => {
 
 export const updateAuctionBid = async (id, amount) => {
   const auction = await getTableItems(process.env.AUCTIONS_TABLE_NAME, { id });
-  if (!auction.Item) throw new Error(`Auction with ${id} does not exist.`);
+  if (!auction.Item || auction.Item.status === 'CLOSED')
+    throw new AppError(
+      `Auction with ${id} is either closed or does not exist.`
+    );
 
   const { highestBid } = auction.Item;
 
   if (highestBid.amount >= amount)
-    throw new Error(
+    throw new AppError(
       `Your bid of ${amount} is not greater than current ${highestBid.amount}`
     );
 
-  const updatedAuction = await updateTableItems(
-    process.env.AUCTIONS_TABLE_NAME,
-    { id },
-    'set highestBid.amount = :amount',
-    {
-      ':amount': amount,
-    }
-  );
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    Key: { id },
+    UpdateExpression: 'set highestBid.amount = :amount',
+    ExpressionAttributeValues: { ':amount': amount },
+    ReturnValues: 'ALL_NEW',
+  };
 
+  const updatedAuction = await updateTableItems(params);
   return updatedAuction.Attributes;
 };
 
@@ -75,4 +79,17 @@ export const fetchEndedAuctions = async () => {
 
   const result = await queryTableItems(params);
   return result.Items;
+};
+
+export const closeAuction = async (auctionId) => {
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    Key: { id: auctionId },
+    UpdateExpression: 'set #status = :status',
+    ExpressionAttributeValues: { ':status': 'CLOSED' },
+    ExpressionAttributeNames: { '#status': 'status' },
+  };
+
+  const result = await updateTableItems(params);
+  return result.Attributes;
 };
