@@ -3,10 +3,10 @@ import {
   getTableItems,
   putItem,
   queryTableItems,
-  scanTableItems,
   updateTableItems,
 } from '../libs/dynamoCommand.js';
 import { AppError } from '../libs/AppError.js';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
 
 export const saveAuction = async ({ title }) => {
   const now = new Date();
@@ -26,10 +26,17 @@ export const saveAuction = async ({ title }) => {
   return { id: auction.id };
 };
 
-export const fetchAuctions = async () => {
-  const auctionItems = await scanTableItems(process.env.AUCTIONS_TABLE_NAME);
+export const fetchAuctions = async (status) => {
+  const params = {
+    TableName: process.env.AUCTIONS_TABLE_NAME,
+    IndexName: 'statusAndEndDate',
+    KeyConditionExpression: '#status = :status',
+    ExpressionAttributeValues: { ':status': { S: status } },
+    ExpressionAttributeNames: { '#status': 'status' },
+  };
 
-  return auctionItems.Items;
+  const auctionItems = await queryTableItems(params);
+  return auctionItems.Items.map((item) => unmarshall(item));
 };
 
 export const fetchAuctionById = async (id) => {

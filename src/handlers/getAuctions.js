@@ -3,9 +3,10 @@ import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
 import { errorHandler } from '../libs/utils.js';
 
-async function getAuctions(_event, _context) {
+async function getAuctions(event, _context) {
   try {
-    const auctions = await fetchAuctions();
+    const { status } = event.queryStringParameters;
+    const auctions = await fetchAuctions(status);
 
     return { statusCode: 200, body: JSON.stringify({ auctions }) };
   } catch (error) {
