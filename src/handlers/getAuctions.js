@@ -1,7 +1,9 @@
-import createHttpError from 'http-errors';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
 import { errorHandler } from '../libs/utils.js';
+import { getAuctionsSchema } from '../libs/schemas/auctions.js';
+import validator from '@middy/validator';
+import { transpileSchema } from '@middy/validator/transpile';
 
 async function getAuctions(event, _context) {
   try {
@@ -14,4 +16,8 @@ async function getAuctions(event, _context) {
   }
 }
 
-export const handler = commonMiddleWare(getAuctions);
+export const handler = commonMiddleWare(getAuctions).use(
+  validator({
+    eventSchema: transpileSchema(getAuctionsSchema),
+  })
+);
