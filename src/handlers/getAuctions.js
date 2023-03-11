@@ -10,7 +10,13 @@ async function getAuctions(event, _context) {
     const { status } = event.queryStringParameters;
     const auctions = await fetchAuctions(status);
 
-    return { statusCode: 200, body: JSON.stringify({ auctions }) };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        status: true,
+        data: { count: auctions.length, auctions },
+      }),
+    };
   } catch (error) {
     errorHandler(error);
   }
