@@ -2,6 +2,8 @@ import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { saveAuction } from '../auctions/index.js';
 import { errorHandler, errorResponseSanitizer } from '../libs/errors.js';
 import { createAuctionSchema } from '../libs/schemas/auctions.js';
+import validator from '@middy/validator';
+import { transpileSchema } from '@middy/validator/transpile';
 
 async function createAuction(event, _context) {
   const { title } = event.body;

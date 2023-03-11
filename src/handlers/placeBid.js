@@ -5,7 +5,7 @@ import { placeAuctionBidSchema } from '../libs/schemas/auctions.js';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
 
-async function placeBid(event, _context) {
+async function placeBid(event, _) {
   const { id } = event.pathParameters;
   const { amount } = event.body;
 

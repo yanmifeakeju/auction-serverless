@@ -15,5 +15,8 @@
     "@middy/validator": "^4.2.6",
     "http-errors": "^2.0.0",
     "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.36.0"
   }
 }

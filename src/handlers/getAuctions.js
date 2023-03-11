@@ -1,15 +1,11 @@
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
-import {
-  errorHandler,
-  errorResponseSanitizer,
-  formatErrorMessage,
-} from '../libs/errors.js';
+import { errorHandler, errorResponseSanitizer } from '../libs/errors.js';
 import { getAuctionsSchema } from '../libs/schemas/auctions.js';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
 
-async function getAuctions(event, _context) {
+async function getAuctions(event, _) {
   try {
     const { status } = event.queryStringParameters;
     const auctions = await fetchAuctions(status);
