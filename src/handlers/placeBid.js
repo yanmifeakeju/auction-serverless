@@ -1,6 +1,9 @@
 import { updateAuctionBid } from '../auctions/index.js';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
-import { errorHandler } from '../libs/errors.js';
+import { errorHandler, errorResponseSanitizer } from '../libs/errors.js';
+import { placeAuctionBidSchema } from '../libs/schemas/auctions.js';
+import validator from '@middy/validator';
+import { transpileSchema } from '@middy/validator/transpile';
 
 async function placeBid(event, _context) {
   const { id } = event.pathParameters;
@@ -18,4 +21,15 @@ async function placeBid(event, _context) {
   }
 }
 
-export const handler = commonMiddleWare(placeBid);
+export const handler = commonMiddleWare(placeBid)
+  .use(
+    validator({
+      eventSchema: transpileSchema(placeAuctionBidSchema),
+    })
+  )
+  .use({
+    onError: (request) => {
+      if (!request.response)
+        request.response = errorResponseSanitizer(request.error);
+    },
+  });

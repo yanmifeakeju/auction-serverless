@@ -1,6 +1,10 @@
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
-import { errorHandler, formatErrorMessage } from '../libs/errors.js';
+import {
+  errorHandler,
+  errorResponseSanitizer,
+  formatErrorMessage,
+} from '../libs/errors.js';
 import { getAuctionsSchema } from '../libs/schemas/auctions.js';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
@@ -30,13 +34,6 @@ export const handler = commonMiddleWare(getAuctions)
   )
   .use({
     onError: (request) => {
-      console.log(request.error.cause);
-      request.response = {
-        statusCode: request.error.statusCode,
-        body: JSON.stringify({
-          status: false,
-          message: formatErrorMessage(request.error.cause[0]),
-        }),
-      };
+      request.response = errorResponseSanitizer(request.error);
     },
   });

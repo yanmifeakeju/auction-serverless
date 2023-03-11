@@ -33,3 +33,20 @@ export const getAuctionsSchema = {
     },
   },
 };
+
+export const placeAuctionBidSchema = {
+  type: 'object',
+  required: ['body'],
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        amount: {
+          type: 'number',
+        },
+      },
+
+      required: ['amount'],
+    },
+  },
+};

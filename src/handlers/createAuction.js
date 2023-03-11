@@ -1,9 +1,7 @@
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { saveAuction } from '../auctions/index.js';
-import { errorHandler, formatErrorMessage } from '../libs/errors.js';
+import { errorHandler, errorResponseSanitizer } from '../libs/errors.js';
 import { createAuctionSchema } from '../libs/schemas/auctions.js';
-import validator from '@middy/validator';
-import { transpileSchema } from '@middy/validator/transpile';
 
 async function createAuction(event, _context) {
   const { title } = event.body;
@@ -28,12 +26,6 @@ export const handler = commonMiddleWare(createAuction)
   )
   .use({
     onError: (request) => {
-      request.response = {
-        statusCode: request.error.statusCode,
-        body: JSON.stringify({
-          status: false,
-          message: formatErrorMessage(request.error.cause[0]),
-        }),
-      };
+      request.response = errorResponseSanitizer(request.error);
     },
   });

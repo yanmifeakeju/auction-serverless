@@ -46,3 +46,15 @@ export const formatErrorMessage = (error) => {
 
   return 'Invalid payload.';
 };
+
+export const errorResponseSanitizer = (error) => {
+  return {
+    statusCode: error.statusCode,
+    body: JSON.stringify({
+      status: false,
+      message: !error.cause
+        ? error.message
+        : formatErrorMessage(error.cause[0]),
+    }),
+  };
+};
