@@ -1,5 +1,5 @@
 import { closeAuction, fetchEndedAuctions } from '../auctions/index.js';
-import { errorHandler } from '../libs/utils.js';
+import { errorHandler } from '../libs/errors.js';
 
 async function processAuctions() {
   try {

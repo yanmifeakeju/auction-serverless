@@ -1,6 +1,6 @@
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { fetchAuctions } from '../auctions/index.js';
-import { errorHandler } from '../libs/utils.js';
+import { errorHandler, formatErrorMessage } from '../libs/errors.js';
 import { getAuctionsSchema } from '../libs/schemas/auctions.js';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
@@ -16,8 +16,21 @@ async function getAuctions(event, _context) {
   }
 }
 
-export const handler = commonMiddleWare(getAuctions).use(
-  validator({
-    eventSchema: transpileSchema(getAuctionsSchema),
-  })
-);
+export const handler = commonMiddleWare(getAuctions)
+  .use(
+    validator({
+      eventSchema: transpileSchema(getAuctionsSchema),
+    })
+  )
+  .use({
+    onError: (request) => {
+      console.log(request.error.cause);
+      request.response = {
+        statusCode: request.error.statusCode,
+        body: JSON.stringify({
+          status: false,
+          message: formatErrorMessage(request.error.cause[0]),
+        }),
+      };
+    },
+  });

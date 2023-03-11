@@ -1,7 +1,7 @@
 import createHttpError from 'http-errors';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
 import { saveAuction } from '../auctions/index.js';
-import { errorHandler } from '../libs/utils.js';
+import { errorHandler } from '../libs/errors.js';
 
 async function createAuction(event, _context) {
   const { title } = event.body;
@@ -11,7 +11,7 @@ async function createAuction(event, _context) {
 
     return {
       statusCode: 201,
-      body: JSON.stringify({ auction }),
+      body: JSON.stringify({ status: true, data: auction }),
     };
   } catch (error) {
     errorHandler(error);

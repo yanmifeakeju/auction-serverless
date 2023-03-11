@@ -1,6 +1,6 @@
 import { updateAuctionBid } from '../auctions/index.js';
 import commonMiddleWare from '../libs/commonMiddleWare.js';
-import { errorHandler } from '../libs/utils.js';
+import { errorHandler } from '../libs/errors.js';
 
 async function placeBid(event, _context) {
   const { id } = event.pathParameters;
