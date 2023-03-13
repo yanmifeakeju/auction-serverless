@@ -5,7 +5,7 @@ import { createAuctionSchema } from '../libs/schemas/auctions.js';
 import validator from '@middy/validator';
 import { transpileSchema } from '@middy/validator/transpile';
 
-async function createAuction(event, _context) {
+async function createAuction(event, _) {
   const { title } = event.body;
 
   try {

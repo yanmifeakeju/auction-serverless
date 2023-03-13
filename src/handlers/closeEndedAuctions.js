@@ -1,7 +1,7 @@
 import { closeAuction, fetchEndedAuctions } from '../auctions/index.js';
 import { errorHandler } from '../libs/errors.js';
 
-async function processAuctions() {
+async function closeEndedAuctions() {
   try {
     const auctionsToClose = await fetchEndedAuctions();
     const closedPromises = auctionsToClose.map((auction) =>
@@ -15,4 +15,4 @@ async function processAuctions() {
   }
 }
 
-export const handler = processAuctions;
+export const handler = closeEndedAuctions;
