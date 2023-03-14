@@ -19,7 +19,7 @@ export const saveAuction = async ({ title, email }) => {
     status: 'OPEN',
     createdAt: now.toISOString(),
     endingAt: endDate.toISOString(),
-    highestBid: { amount: 0 },
+    highestBid: { amount: 0, bidder: null },
     seller: email,
   };
 
@@ -45,12 +45,15 @@ export const fetchAuctionById = async (id) => {
   return auction?.Item;
 };
 
-export const updateAuctionBid = async (id, amount) => {
+export const updateAuctionBid = async (id, { amount, email }) => {
   const auction = await getTableItems(process.env.AUCTIONS_TABLE_NAME, { id });
   if (!auction.Item || auction.Item.status === 'CLOSED')
     throw new AppError(
       `Auction with ${id} is either closed or does not exist.`
     );
+
+  if (!auction.Item.email || auction.Item.email === email)
+    throw new AppError(`Auction bid for ${id} rejected.`);
 
   const { highestBid } = auction.Item;
 

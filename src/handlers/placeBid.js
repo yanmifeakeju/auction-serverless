@@ -8,9 +8,10 @@ import { transpileSchema } from '@middy/validator/transpile';
 async function placeBid(event, _) {
   const { id } = event.pathParameters;
   const { amount } = event.body;
+  const { email } = event.requestContext.authorizer;
 
   try {
-    const updatedAuctionBid = await updateAuctionBid(id, amount);
+    const updatedAuctionBid = await updateAuctionBid(id, { amount, email });
 
     return {
       statusCode: 200,
