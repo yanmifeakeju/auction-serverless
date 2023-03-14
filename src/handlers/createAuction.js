@@ -7,9 +7,10 @@ import { transpileSchema } from '@middy/validator/transpile';
 
 async function createAuction(event, _) {
   const { title } = event.body;
+  const { email } = event.requestContext.authorizer;
 
   try {
-    const auction = await saveAuction({ title });
+    const auction = await saveAuction({ title, email });
 
     return {
       statusCode: 201,

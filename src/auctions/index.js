@@ -8,7 +8,7 @@ import {
 import { AppError } from '../libs/AppError.js';
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 
-export const saveAuction = async ({ title }) => {
+export const saveAuction = async ({ title, email }) => {
   const now = new Date();
   const endDate = new Date();
   endDate.setHours(now.getHours() + 1);
@@ -20,6 +20,7 @@ export const saveAuction = async ({ title }) => {
     createdAt: now.toISOString(),
     endingAt: endDate.toISOString(),
     highestBid: { amount: 0 },
+    seller: email,
   };
 
   await putItem(process.env.AUCTIONS_TABLE_NAME, auction);
