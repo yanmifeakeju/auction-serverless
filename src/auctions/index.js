@@ -45,14 +45,14 @@ export const fetchAuctionById = async (id) => {
   return auction?.Item;
 };
 
-export const updateAuctionBid = async (id, { amount, email }) => {
+export const updateAuctionBid = async (id, { amount, bidder }) => {
   const auction = await getTableItems(process.env.AUCTIONS_TABLE_NAME, { id });
   if (!auction.Item || auction.Item.status === 'CLOSED')
     throw new AppError(
       `Auction with ${id} is either closed or does not exist.`
     );
 
-  if (!auction.Item.email || auction.Item.email === email)
+  if (!auction.Item.seller || auction.Item.seller === bidder)
     throw new AppError(`Auction bid for ${id} rejected.`);
 
   const { highestBid } = auction.Item;
@@ -65,8 +65,9 @@ export const updateAuctionBid = async (id, { amount, email }) => {
   const params = {
     TableName: process.env.AUCTIONS_TABLE_NAME,
     Key: { id },
-    UpdateExpression: 'set highestBid.amount = :amount',
-    ExpressionAttributeValues: { ':amount': amount },
+    UpdateExpression:
+      'set highestBid.amount = :amount, highestBid.bidder = :bidder',
+    ExpressionAttributeValues: { ':amount': amount, ':bidder': bidder },
     ReturnValues: 'ALL_NEW',
   };
 

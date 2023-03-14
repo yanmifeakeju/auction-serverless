@@ -11,7 +11,10 @@ async function placeBid(event, _) {
   const { email } = event.requestContext.authorizer;
 
   try {
-    const updatedAuctionBid = await updateAuctionBid(id, { amount, email });
+    const updatedAuctionBid = await updateAuctionBid(id, {
+      amount,
+      bidder: email,
+    });
 
     return {
       statusCode: 200,
