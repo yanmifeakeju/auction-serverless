@@ -1,0 +1,52 @@
+service: backend
+
+frameworkVersion: '3'
+
+plugins:
+  - serverless-iam-roles-per-function
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: 'us-east-1'
+  environment:
+    BUCKET_NAME: !Ref FileBucket
+
+functions:
+  createShareableLink:
+    handler: handlers/create-link.handler
+    events:
+      - httpApi:
+          method: POST
+          path: '/'
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+          - s3:PutObject
+        Resource:
+          - !Sub 'arn:aws:s3:::${FileBucket}/shareable/*'
+      - Effect: Allow
+        Action:
+          - s3:ListBucket
+        Resource:
+          - !Sub 'arn:aws:s3:::${FileBucket}'
+
+resources:
+  Resources:
+    FileBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${file(stacks/unique-bucket-name.cjs):bucketName}
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault:
+                SSEAlgorithm: AES256
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        NotificationConfiguration:
+          EventBridgeConfiguration:
+            EventBridgeEnabled: true
