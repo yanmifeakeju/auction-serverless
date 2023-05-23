@@ -12,6 +12,9 @@ provider:
   environment:
     BUCKET_NAME: !Ref FileBucket
 
+custom:
+  domainName: yanmifeakeju.link
+
 functions:
   createShareableLink:
     handler: handlers/create-link.handler
@@ -34,6 +37,12 @@ functions:
 
 resources:
   Resources:
+    CustomDomain:
+      Type: AWS::ApiGatewayV2::DomainName
+      Properties:
+        DomainName: ${self:custom.domainName}
+        DomainNameConfigurations:
+          - CertificateArn:
     FileBucket:
       Type: AWS::S3::Bucket
       Properties:
